@@ -1,5 +1,11 @@
 # @e2e-dev/web
 
+## 0.15.6
+
+### Patch Changes
+
+- [#1592](https://github.com/tester-army/e2e/pull/1592) [`b43e846`](https://github.com/tester-army/e2e/commit/b43e8469ce55c96e54d979d08ccf0034ad93e546) Thanks [@KrzysztofMoch](https://github.com/KrzysztofMoch)! - `expect(browser).toHaveURL` failures print a relative expected URL resolved against the app URL, the same way it is compared, so it reads beside the absolute observed URL.
+
 ## 0.15.5
 
 ### Patch Changes
