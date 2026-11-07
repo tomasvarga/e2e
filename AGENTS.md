@@ -170,6 +170,22 @@ suites that consume the built packages the way a user would.
   engine (`DeviceProvider`), through agent-device's built-in `browserstack`
   provider. An `https` `app` is uploaded once per run through the App
   Automate API, since the session's `app` capability takes only `bs://` ids.
+- `packages/e2b` — the published `@e2e-dev/e2b` package: E2B sandboxes for
+  both engines, through the `e2b` SDK (peer). Every sandbox refuses public
+  traffic; a loopback tunnel on the runner (`src/tunnel.ts`) adds E2B's
+  traffic access token, and a lease names only that tunnel, so no lease
+  carries that token. `e2b()` (`DeviceProvider`) boots one `android-16`
+  sandbox per worker slot, installs the engine's agent-device there behind
+  `agent-device proxy`, and installs the target's `.apk` through that proxy
+  with the agent-device client (pinned like `@e2e-dev/mobile`'s); the lease's
+  `daemon` is the tunnel, so the runner needs no `adb`. `e2bBrowsers()` from
+  `@e2e-dev/e2b/web` (`BrowserProvider`) starts Chromium on a sandbox's
+  loopback and creates the sandbox with `maskRequestHost`, so E2B's edge
+  rewrites `Host` to `localhost` and DevTools accepts the request. Keep the
+  Playwright image in `docs/examples/web/e2b-template.ts` in sync with
+  `@e2e-dev/web`. Run
+  `pnpm --filter @e2e-dev/e2b test`, then verify live sandboxes on both
+  engines, web in both scopes, with `E2B_API_KEY` set.
 - `apps/testbed` (`@e2e-dev/testbed`, private) — dogfood project that
   consumes the **built** packages like a real user would: the playground app
   where every runner feature (sessions, routes, downloads, frames, uploads,
@@ -249,7 +265,7 @@ suites that consume the built packages the way a user would.
   it generated and ran for `apps/testbed`: regenerate it when a playground
   route, label, or test it names changes.
 - `skills/migrate-to-e2e/`: a consumer skill that ports a Playwright,
-  Cypress, Selenium, Detox, Maestro, or TesterArmy suite one slice per session, the old
+  Cypress, Selenium, Appium, Detox, Maestro, or TesterArmy suite one slice per session, the old
   suite running beside the new one, with a `MIGRATION.md` progress file the next
   session resumes from. It routes to `docs/migrate/<runner>.mdx` for the
   API mapping, so a mapping change edits the guide, not the skill. Installed
